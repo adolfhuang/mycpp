@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<vector<string>> findDuplicate(vector<string>& paths) {
+        vector<vector<string>> result;
+        unordered_map<string, vector<string>> hashMap;//根据文件内容关联文件目录
+        for (auto &path : paths){
+            int pathSize = path.size(), index = 0;
+            string filePath = "", fileName = "", fileContent = "";
+            //第一步：读取当前path的路径
+            while (index < pathSize && path[index] != ' '){
+                filePath += path[index++];
+            }
+            filePath += '/';//最后需要添加斜杠，表示是目录
+            index += 1;//跳过空格
+            //第二步：接下来读取path中的文件
+            while (index < pathSize){
+                fileName = "";
+                fileContent = "";
+                //1、读取文件名
+                while (index < pathSize && path[index] != '('){
+                    fileName += path[index++];
+                }
+                index += 1;//跳过右括号
+                //2、开始读取这个文件的内容
+                while (index < pathSize && path[index] != ')'){
+                    fileContent += path[index++];
+                }
+                index += 2;//跳过右括号、空格
+                //3、将文件内容关联这个文件的路径+文件名
+                hashMap[fileContent].push_back(filePath + fileName);
+            }
+        }
+        //从hash表中找出文件内容对应的文件多于1个文件路径
+        for (auto &item : hashMap){
+            if (item.second.size() > 1){
+                result.push_back(item.second);
+            }
+        }
+        return result;
+    }
+};
